@@ -18,13 +18,26 @@ Given (/^The contact list is display$/, function ( callback ) {
     });
 });
 
+let contact;
+let ligne;
+
 When (/^User clicks on remove button of the first contact$/, function ( callback ) {
     this.browser.visit("http://localhost:3000", (err) => {
+        let C = this.browser.tabs.current.Contact;
+        contact = C.Contacts.instance().iterator().first();
+        let bouton = this.browser.document.getElementById('button_'+contact.id());
+        this.browser.pressButton(bouton);
+        ligne = this.browser.document.getElementById('x'+contact.id());
         callback ();
     });
 });
 
 Then (/^The first contact is removed$/, function ( callback ) {
-    this.browser.visit("http://localhost:3000");
-    callback ();
+    this.browser.visit("http://localhost:3000", (err) => {
+        let C = this.browser.tabs.current.Contact;
+        assert.ok( !ligne );
+        let newFirstContact = C.Contacts.instance().iterator().first();
+        assert.ok( contact !== newFirstContact );
+        callback ();
+    });
 });
